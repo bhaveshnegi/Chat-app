@@ -1,5 +1,35 @@
-export const signup = (req,res)=>{
-    res.send("singup route"); 
+import User from "../models/user.model.js";
+import bcrypt from "bcrypt";
+
+export const signup = async (req,res)=>{
+    const {fullName,email,password} = req.body;
+    try {
+        if(password.length<6){
+            return res.status(400).json({message:"Password Must be at leat 6 character"});
+        }
+
+        const user= await User.findone({email});
+
+        if(user) return res.status(400).json({message:"Email already exists"});
+        
+        const salt = await bcrypt.genSalt(10)
+        const hashPassword = await bcrypt.hash(password,salt) //123456 => bjwuyk_32hosb
+        
+        const newUser = new User({
+            fullName:fullName,
+            email:email,
+            password:hashPassword
+        })
+
+        if(newUser){
+            // genrate jwt token here
+        }else{
+            res.status(400).json({message:"invalid user data"})
+        }
+        
+    } catch (error) {
+        
+    }
 }
 
 export const login = (req,res)=>{
