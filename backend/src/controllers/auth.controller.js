@@ -1,3 +1,4 @@
+import { genrateToken } from "../lib/utils.js";
 import User from "../models/user.model.js";
 import bcrypt from "bcrypt";
 
@@ -23,6 +24,16 @@ export const signup = async (req,res)=>{
 
         if(newUser){
             // genrate jwt token here
+            genrateToken(newUser._id,res)
+            await newUser.save();
+
+            res.status(201).json({
+                _id:newUser._id,
+                fullName:newUser.fullName,
+                email:newUser.email,
+                profilePic:newUser.profilePic,
+            })
+
         }else{
             res.status(400).json({message:"invalid user data"})
         }
