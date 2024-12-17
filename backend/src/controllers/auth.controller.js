@@ -1,15 +1,19 @@
 import { genrateToken } from "../lib/utils.js";
 import User from "../models/user.model.js";
-import bcrypt from "bcrypt";
+import bcrypt from "bcryptjs";
 
 export const signup = async (req,res)=>{
     const {fullName,email,password} = req.body;
     try {
+        if(!fullName || !email || !password){
+            return res.status(400).json({message:"All field are required"});
+        }
+
         if(password.length<6){
             return res.status(400).json({message:"Password Must be at leat 6 character"});
         }
 
-        const user= await User.findone({email});
+        const user= await User.findOne({email});
 
         if(user) return res.status(400).json({message:"Email already exists"});
         
@@ -39,7 +43,8 @@ export const signup = async (req,res)=>{
         }
         
     } catch (error) {
-        
+        console.log("Error in signup",error.message);
+        res.status(500).json({message:"Internal Server Error"});
     }
 }
 
